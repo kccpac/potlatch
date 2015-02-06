@@ -21,8 +21,12 @@ import android.widget.TextView;
 
 
 
-import com.potlatchClient.provider.GiftInClient;
-import com.potlatchClient.provider.UserEmotionInClient;
+
+
+//import com.potlatchClient.provider.GiftInClient;
+//import com.potlatchClient.provider.UserEmotionInClient;
+import com.potlatchClient.server.Gift;
+import com.potlatchClient.server.UserEmotion;
 import com.potlatchClient.server.emotionType;
 import com.potlatchClient.server.queryDataType;
 
@@ -37,10 +41,10 @@ public class DisplayGift extends Activity {
 	protected ImageButton mBtn[] = new ImageButton[emotionType.values().length];
 	protected int mBtnId[] = { -1, R.id.imageButton1, R.id.imageButton2, R.id.imageButton3};
 
-	protected GiftInClient mGift;
+	protected Gift mGift;
 	private PotlatchUtil mUtil;
 	private long mUserId;
-	private UserEmotionInClient mUser;
+	private UserEmotion mUser;
 	
 	private counterEnable [] mCounterEnable = new counterEnable[emotionType.values().length];
 
@@ -49,7 +53,7 @@ public class DisplayGift extends Activity {
 		Log.i(tag, "onCreate");
 		super.onCreate(savedInstanceState);
 		
-		mGift = getIntent().getParcelableExtra("gift");
+		mGift = (Gift) getIntent().getSerializableExtra("gift");
 		mUserId = getIntent().getLongExtra("userId", -1);
 	
 		setContentView(R.layout.activity_display_gift);		
@@ -79,7 +83,7 @@ public class DisplayGift extends Activity {
 				}
 				else if (msg.what == PotlatchConst.MESSAGE_QUERY_USERDATA)
 				{
-					UserEmotionInClient userdata = b.getParcelable(PotlatchConst.query_user_data);
+					UserEmotion userdata = (UserEmotion) b.getSerializable(PotlatchConst.query_user_data);
 					updateEmotionButton(userdata);
 				}
 			}
@@ -196,7 +200,7 @@ public class DisplayGift extends Activity {
 		dataImageView.setImageBitmap(bitmap);
 	}
 	
-	protected void updateEmotionButton(final UserEmotionInClient userdata)
+	protected void updateEmotionButton(final UserEmotion userdata)
 	{
 		if (userdata == null)
 			return;

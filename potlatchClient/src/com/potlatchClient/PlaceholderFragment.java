@@ -1,16 +1,19 @@
 package com.potlatchClient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.potlatchClient.provider.GiftInClient;
+//import com.potlatchClient.provider.GiftInClient;
+import com.potlatchClient.server.Gift;
 import com.potlatchClient.server.queryDataType;
+import android.app.ListFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.support.v4.app.ListFragment;
+//import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -32,7 +35,7 @@ public class PlaceholderFragment extends ListFragment {
 	
 	private PotlatchUtil mUtil;
 	
-	private ArrayList<GiftInClient> giftData;
+	private ArrayList<Gift> giftData;
 	private GiftDataArrayAdapter aa;
 
 	public PlaceholderFragment() {
@@ -43,7 +46,7 @@ public class PlaceholderFragment extends ListFragment {
 		Log.i(tag, "onCreate thread id: " + Thread.currentThread().getId());
 		super.onCreate(savedInstanceState);	
 
-		giftData = new ArrayList<GiftInClient>();
+		giftData = new ArrayList<Gift>();
 		
 		setRetainInstance(true);
 	}
@@ -115,7 +118,7 @@ public class PlaceholderFragment extends ListFragment {
 						public void run() {
 							// TODO Auto-generated method stub
 							Log.i(tag, "handleMessage new thread id: " + Thread.currentThread().getId());
-							ArrayList<GiftInClient> gs = b.getParcelableArrayList(PotlatchConst.query_gift_data);
+							ArrayList<Gift> gs = (ArrayList<Gift>) b.getSerializable(PotlatchConst.query_gift_data);
 							updateGiftdata(gs);
 						}						
 			
@@ -142,7 +145,7 @@ public class PlaceholderFragment extends ListFragment {
 
     }
 	
-	public void updateGiftdata(final ArrayList<GiftInClient> currentList2)
+	public void updateGiftdata(final ArrayList<Gift> gs)
 	{
 		Log.i(tag, "updateGiftdata thread id: " + Thread.currentThread().getId());
 		getActivity().runOnUiThread(new Runnable()
@@ -152,7 +155,7 @@ public class PlaceholderFragment extends ListFragment {
 			public void run() {
 				Log.i(tag, "runOnUiThread thread id: " + Thread.currentThread().getId());
 				// TODO Auto-generated method stub
-				giftData.addAll(currentList2);				
+				giftData.addAll(gs);				
 				aa.notifyDataSetChanged();
 				
 			}
@@ -199,7 +202,7 @@ public class PlaceholderFragment extends ListFragment {
 
 		Intent intent = new Intent();
 		intent.setClass(getActivity().getApplicationContext(), DisplayGift.class);
-		intent.putExtra("gift", (Parcelable) giftData.get(position));
+		intent.putExtra("gift", (Serializable) giftData.get(position));
 		intent.putExtra("userId", ((ShowGift)getActivity()).getUserId());
 		startActivityForResult(intent, 0);
 		

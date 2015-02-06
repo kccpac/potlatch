@@ -1,6 +1,7 @@
 package com.potlatch.server.repository;
 
 //import java.net.MalformedURLException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,12 @@ import com.google.common.base.Objects;
 
 
 @Entity
-public class Gift {
+public class Gift implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)

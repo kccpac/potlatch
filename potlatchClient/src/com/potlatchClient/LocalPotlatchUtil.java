@@ -15,24 +15,24 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.potlatchClient.provider.GiftInClient;
-import com.potlatchClient.provider.TouchCountInClient;
-import com.potlatchClient.provider.UserEmotionInClient;
+//import com.potlatchClient.provider.GiftInClient;
+//import com.potlatchClient.provider.TouchCountInClient;
+//import com.potlatchClient.provider.UserEmotionInClient;
 import com.potlatchClient.provider.dataContract;
 import com.potlatchClient.server.*;
 import com.potlatchClient.server.PotlatchStatus.PotlatchState;
 
-public class LocalPotlachUtil extends PotlatchUtil {
+public class LocalPotlatchUtil extends PotlatchUtil {
 
-	public static final String tag = LocalPotlachUtil.class.getCanonicalName();
+	public static final String tag = LocalPotlatchUtil.class.getCanonicalName();
 
-	public LocalPotlachUtil(Context ctx) {
+	public LocalPotlatchUtil(Context ctx) {
 		super(ctx);
 	}	
 
 
-	public void addGift(GiftInClient gift) {
-		final GiftInClient v = gift;
+	public void addGift(Gift gift) {
+		final Gift v = gift;
 		if (mDB == null)
 			return;
 
@@ -60,7 +60,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 	}
 
 	@Override
-	public void setGiftData(GiftInClient gift) {
+	public void setGiftData(Gift gift) {
 
 		PotlatchStatus status = new PotlatchStatus(null);
 		Message msg = super.setMessage(handler, 1, "setGiftData",
@@ -77,13 +77,20 @@ public class LocalPotlachUtil extends PotlatchUtil {
 	public void getData(final String giftId, final String catergory) {
 		
 		Log.i(tag, "getData");
+		
 		new Thread(new Runnable()
 		{
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				Uri dataUri = dataContract.SOURCE_CONTENT_URI.buildUpon()
+				
+				Uri uri = dataContract.SOURCE_CONTENT_URI;
+				if (catergory.equals("thumbnail"))
+				{
+					uri = dataContract.THUMBNAIL_CONTENT_URI;
+				}
+				Uri dataUri = uri.buildUpon()
 							.appendPath(giftId).build();
 				
 				byte data[] = null;
@@ -126,7 +133,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 		
 	}
 
-	public static GiftInClient getGiftDataFromCursor(Cursor cursor) {
+	public static Gift getGiftDataFromCursor(Cursor cursor) {
 
 		long id = cursor.getLong(cursor.getColumnIndex(dataContract.Col._ID));
 		String ownerId = cursor.getString(cursor
@@ -139,7 +146,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 				.getColumnIndex(dataContract.Col._TYPE));
 
 		// construct the returned object
-		GiftInClient gift = new GiftInClient(id, Long.parseLong(ownerId),
+		Gift gift = new Gift(id, Long.parseLong(ownerId),
 				title, description, type);
 
 		gift.setEmotionCounter(emotionType.EMOTION_TOUCHED, cursor
@@ -153,13 +160,14 @@ public class LocalPotlachUtil extends PotlatchUtil {
 						.getColumnIndex(dataContract.Col._COUNTER_OBSCENE)));
 		return gift;
 	}
+	
 
-	private ArrayList<GiftInClient> getGiftDataArrayListFromCursor(Cursor cursor, emotionType eFilter) {
-		ArrayList<GiftInClient> rValue = new ArrayList<GiftInClient>();
+	private ArrayList<Gift> getGiftDataArrayListFromCursor(Cursor cursor, emotionType eFilter) {
+		ArrayList<Gift> rValue = new ArrayList<Gift>();
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				do {
-					GiftInClient g = getGiftDataFromCursor(cursor);
+					Gift g = getGiftDataFromCursor(cursor);
 					if (g.getEmotionCounter(eFilter) == 0)
 						rValue.add(g);
 				} while (cursor.moveToNext() == true);
@@ -167,8 +175,8 @@ public class LocalPotlachUtil extends PotlatchUtil {
 		}
 		return rValue;
 	}
-	private ArrayList<GiftInClient> getGiftDataArrayListFromCursor(Cursor cursor) {
-		ArrayList<GiftInClient> rValue = new ArrayList<GiftInClient>();
+	private ArrayList<Gift> getGiftDataArrayListFromCursor(Cursor cursor) {
+		ArrayList<Gift> rValue = new ArrayList<Gift>();
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				do {
@@ -188,7 +196,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 			public void run() {
 				// TODO Auto-generated method stub
 				Cursor result = null;
-				ArrayList<GiftInClient> rValue = null;
+				ArrayList<Gift> rValue = null;
 
 				String projection[] = dataContract.GIFT_COLUMNS;
 				String selection = null;
@@ -208,9 +216,9 @@ public class LocalPotlachUtil extends PotlatchUtil {
 					result = mDB.query(dataContract.TABLE_GIFT, projection,
 							selection, selectionArgs, null, null, null);
 
-					rValue = new ArrayList<GiftInClient>();
+					rValue = new ArrayList<Gift>();
 
-					ArrayList<GiftInClient> glist = null; 
+					ArrayList<Gift> glist = null; 
 							
 					if (eFilter == emotionType.EMOTION_NONE)
 						glist = getGiftDataArrayListFromCursor(result);
@@ -222,7 +230,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 					Message msg = Message.obtain(handler,
 							PotlatchMsg.QUERY_GIFTDATA.getVal());
 					Bundle b = new Bundle();
-					b.putParcelableArrayList(PotlatchConst.query_gift_data,
+					b.putSerializable(PotlatchConst.query_gift_data,
 							rValue);
 					msg.setData(b);
 					handler.sendMessage(msg);
@@ -262,7 +270,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 			public void run() {
 				// TODO Auto-generated method stub
 				Cursor result = null;
-				UserEmotionInClient rValue = null;
+				UserEmotion rValue = null;
 
 				String projection[] = dataContract.USER_COLUMNS;
 				String selection = dataContract.Col._ID + " LIKE ? AND "
@@ -301,7 +309,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 					Message msg = Message.obtain(handler,
 							PotlatchMsg.QUERY_USERDATA.getVal());
 					Bundle b = new Bundle();
-					b.putParcelable(PotlatchConst.query_user_data,
+					b.putSerializable(PotlatchConst.query_user_data,
 							rValue);
 					msg.setData(b);
 					handler.sendMessage(msg);
@@ -331,7 +339,8 @@ public class LocalPotlachUtil extends PotlatchUtil {
 				cursor = mDB.query(dataContract.TABLE_GIFT,
 						dataContract.TOUCHCOUNT_COLUMNS, null, null, null, null, null);
 
-				ArrayList<TouchCountInClient> rValue = new ArrayList<TouchCountInClient>();
+			//	ArrayList<TouchCountInClient> rValue = new ArrayList<TouchCountInClient>();
+				ArrayList<touchCount> rValue = new ArrayList<touchCount>();
 				
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
@@ -344,7 +353,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 							int count = cursor.getInt(cursor
 									.getColumnIndex(dataContract.Col._COUNTER_TOUCHED));
 							Log.i(tag, "gift " + id + ": " + count);
-							rValue.add(new TouchCountInClient(id, title, count));
+							rValue.add(new touchCount(id, title, count));
 						} while (cursor.moveToNext() == true);
 					}
 					cursor.close();
@@ -353,16 +362,16 @@ public class LocalPotlachUtil extends PotlatchUtil {
 				Message msg = Message.obtain(handler,
 						PotlatchMsg.QUERY_TOPGIVER.getVal());
 				Bundle b = new Bundle();
-				b.putParcelableArrayList(PotlatchConst.query_top_giver, rValue);
+				b.putSerializable(PotlatchConst.query_top_giver, rValue);
 				msg.setData(b);
 				handler.sendMessage(msg);
 			}
 		}).start();
 	}
 	
-	public UserEmotionInClient getUserDataFromCursor(Cursor cursor) {
+	public UserEmotion getUserDataFromCursor(Cursor cursor) {
 
-		UserEmotionInClient user = null;
+		UserEmotion user = null;
 
 		if (cursor.getCount() <= 0)
 			return user;
@@ -391,7 +400,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 								.getColumnIndex(dataContract.Col._OBSCENE)));
 
 		// construct the returned object
-		user = new UserEmotionInClient(ownerId, giftId);
+		user = new UserEmotion(ownerId, giftId);
 
 		user.setEmotion(emotionType.EMOTION_TOUCHED, bTouched);
 		user.setEmotion(emotionType.EMOTION_INAPPROPRIATE, bInappropriate);
@@ -400,8 +409,8 @@ public class LocalPotlachUtil extends PotlatchUtil {
 		return user;
 	}
 
-	private List<UserEmotionInClient> getUserDataArrayListFromCursor(Cursor cursor) {
-		List<UserEmotionInClient> rValue = new ArrayList<UserEmotionInClient>();
+	private List<UserEmotion> getUserDataArrayListFromCursor(Cursor cursor) {
+		List<UserEmotion> rValue = new ArrayList<UserEmotion>();
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				do {
@@ -412,10 +421,10 @@ public class LocalPotlachUtil extends PotlatchUtil {
 		return rValue;
 	}
 
-	public List<UserEmotionInClient> queryUserDataArray() {
+	public List<UserEmotion> queryUserDataArray() {
 
 		Cursor result = null;
-		List<UserEmotionInClient> rValue = null;
+		List<UserEmotion> rValue = null;
 		result = mDB.query(dataContract.TABLE_USER, dataContract.USER_COLUMNS,
 				null, null, null, null, null);
 
@@ -424,7 +433,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 
 	}
 
-	public void setUserEmotion(UserEmotionInClient user) {
+	public void setUserEmotion(UserEmotion user) {
 
 		Log.i(tag, "setUserEmotion");
 		final String userId = Long.toString(user.getId());
@@ -484,7 +493,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 		}).start();
 	}
 
-	public void setEmotionCounter(final GiftInClient gift,
+	public void setEmotionCounter(final Gift gift,
 			final counterEnable cEnabled[]) {
 
 		Log.i(tag, "setEmotionCounter");
@@ -543,7 +552,7 @@ public class LocalPotlachUtil extends PotlatchUtil {
 
 	}
 
-	public long updateTouchCountTable(TouchCountInClient tc) {
+	public long updateTouchCountTable(touchCount tc) {
 
 		Log.i(tag, "updateTouchCountTable");	
 
@@ -586,6 +595,10 @@ public class LocalPotlachUtil extends PotlatchUtil {
 		queryTopGiver();
 		
 	}
+
+
+
+
 
 
 }

@@ -1,7 +1,14 @@
 package com.potlatchClient.server;
 
-public class UserEmotion {
+import java.io.Serializable;
 
+public class UserEmotion implements Serializable  {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	protected long id;
 	protected int[] emotion;
 	protected long giftId;

@@ -1,14 +1,15 @@
 package com.potlatchClient;
 
-import android.support.v7.app.ActionBarActivity;
+//import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class ShowGift extends ActionBarActivity {
+public class ShowGift extends Activity {
 
 	private final static String tag = ShowGift.class.getCanonicalName();
 	private long mUserId;
@@ -23,7 +24,7 @@ public class ShowGift extends ActionBarActivity {
 		
 		if (savedInstanceState == null) {
 			PlaceholderFragment fragment = new PlaceholderFragment();
-			getSupportFragmentManager().beginTransaction()
+			getFragmentManager().beginTransaction()
 					.add(R.id.container, fragment, "Test_tag").commit();
 		}
 	}

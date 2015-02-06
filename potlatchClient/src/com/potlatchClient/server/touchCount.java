@@ -1,6 +1,13 @@
 package com.potlatchClient.server;
 
-public class touchCount {
+import java.io.Serializable;
+
+public class touchCount  implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	protected long giftId;
 	protected String giftTitle;
 	protected int count;

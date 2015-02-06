@@ -17,7 +17,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.potlatchClient.provider.TouchCountInClient;
+//import com.potlatchClient.provider.TouchCountInClient;
+import com.potlatchClient.server.touchCount;
 
 
 public class ShowTopGiver extends Activity  {
@@ -49,7 +50,9 @@ public class ShowTopGiver extends Activity  {
 				Bundle b = msg.getData();				
 				if (msg.what == PotlatchConst.MESSAGE_QUERY_TOPGIVER && b != null)
 				{					
-					ArrayList<TouchCountInClient> data = b.getParcelableArrayList(PotlatchConst.query_top_giver);
+					ArrayList<touchCount> data = (ArrayList<touchCount>)
+							b.getSerializable(PotlatchConst.query_top_giver);
+					
 					showtable(data);
 				}
 			}
@@ -61,13 +64,13 @@ public class ShowTopGiver extends Activity  {
 		mUtil.local_queryTopGiver();
 	}
 	
-	private void showtable(ArrayList<TouchCountInClient> tlist)
+	private void showtable(ArrayList<touchCount> tlist)
 	{
 		int i=0;
 		mtlayout.addView(genTableRow(new String[] { "Gift Title", "Touched #" }));
 		for (i=0; i<tlist.size(); i++)
 		{
-			TouchCountInClient tc = tlist.get(i);
+			touchCount tc = tlist.get(i);
 			final String elem[] = new String[] {					
 				tc.getGiftTitle(),
 				Integer.toString(tc.getCount()) 

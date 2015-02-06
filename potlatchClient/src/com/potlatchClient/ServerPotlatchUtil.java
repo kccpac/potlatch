@@ -4,6 +4,7 @@ package com.potlatchClient;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -26,8 +27,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.potlatchClient.provider.GiftInClient;
-import com.potlatchClient.provider.TouchCountInClient;
-import com.potlatchClient.provider.UserEmotionInClient;
+import com.potlatchClient.server.touchCount;
+import com.potlatchClient.server.UserEmotion;
 import com.potlatchClient.provider.dataContract;
 import com.potlatchClient.server.Gift;
 import com.potlatchClient.server.PotlatchStatus;
@@ -63,7 +64,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 	}
 
 	@Override
-	public void addGift(final GiftInClient gift) {
+	public void addGift(final Gift gift) {
 		// TODO Auto-generated method stub
 		
 		if (svc == null )
@@ -79,7 +80,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		}
 		new Thread(new Runnable() {
 			
-			public Gift convertForServer(GiftInClient gift)
+/*			public Gift convertForServer(GiftInClient gift)
 			{
 				Gift g = new Gift(
 						gift.getOwnerId(),
@@ -87,11 +88,11 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 						gift.getDescription(),
 						gift.getGiftType());		
 				return g;
-			}
+			}*/
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				Gift g= convertForServer(gift);
+				Gift g= null;//convertForServer(gift);
 				g = svc.addGift(g);
 
 				
@@ -189,7 +190,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		new Thread(new Runnable()
 		{
 
-			private void convertForClient(Collection<Gift> gifts, ArrayList<GiftInClient> gs)
+		/*	private void convertForClient(Collection<Gift> gifts, ArrayList<GiftInClient> gs)
 			{
 			//	ArrayList<GiftInClient> gs = new ArrayList<GiftInClient>();
 			//	int i;
@@ -207,7 +208,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 				}
 			//	return gs;
 			}
-
+*/
 
 			@Override
 			public void run() {
@@ -227,12 +228,13 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 						break;
 				}
 				
-				ArrayList<GiftInClient> gClientlist = new ArrayList<GiftInClient>();
+			//	ArrayList<GiftInClient> gClientlist = new ArrayList<GiftInClient>();
 						
-				convertForClient(gifts, gClientlist);
+			//	convertForClient(gifts, gClientlist);
 				Message msg = Message.obtain(handler, PotlatchMsg.QUERY_GIFTDATA.getVal());				
 				Bundle b = new Bundle();
-				b.putParcelableArrayList(PotlatchConst.query_gift_data, gClientlist);
+				b.putSerializable(PotlatchConst.query_gift_data, gifts.toArray());
+		//		b.putParcelableArrayList(PotlatchConst.query_gift_data, gClientlist);
 				msg.setData(b);
 				boolean result = handler.sendMessage(msg);
 				Log.i(tag, "result is " + result);
@@ -258,7 +260,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		
 		new Thread(new Runnable()
 		{
-			private UserEmotionInClient convertToUserEmotionInClient(UserEmotion user)
+	/*		private UserEmotionInClient convertToUserEmotionInClient(UserEmotion user)
 			{				
 				UserEmotionInClient uInClient = new UserEmotionInClient(
 					user.getId(),
@@ -271,18 +273,20 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 
 				return uInClient;
 			}
+			*/
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				
 				UserEmotion userfromServer = svc.queryUserData(userId, giftId);
 				
-				UserEmotionInClient uInClient = convertToUserEmotionInClient(userfromServer);
+			//	UserEmotionInClient uInClient = convertToUserEmotionInClient(userfromServer);
 				
 				Message msg = Message.obtain(handler,
 						PotlatchMsg.QUERY_USERDATA.getVal());
 				Bundle b = new Bundle();
-				b.putParcelable(PotlatchConst.query_user_data, uInClient);
+				b.putSerializable(PotlatchConst.query_user_data, userfromServer);
+			//	b.putParcelable(PotlatchConst.query_user_data, uInClient);
 				msg.setData(b);
 				handler.sendMessage(msg);				
 			}			
@@ -290,13 +294,13 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 	}
 
 	@Override
-	public void setUserEmotion(final UserEmotionInClient userInClient)
+	public void setUserEmotion(final UserEmotion user)
 	{
 		Log.i(tag, "setUserEmotion");
 	
 		new Thread(new Runnable()
 		{
-			private UserEmotion convertToClient(UserEmotionInClient user)
+	/*		private UserEmotion convertToClient(UserEmotionInClient user)
 			{				
 				UserEmotion uInClient = new UserEmotion(
 					user.getId(),
@@ -309,11 +313,12 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 
 				return uInClient;
 			}
+			*/
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				
-				UserEmotion user = convertToClient(userInClient);
+			//	UserEmotion user = convertToClient(userInClient);
 				boolean ret = svc.setUserEmotion(user);
 				
 				Message msg = Message.obtain(handler,
@@ -339,7 +344,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 				cursor = mDB.query(dataContract.TABLE_TOUCHCOUNT,
 						dataContract.TOUCHCOUNT_COLUMNS, null, null, null, null, null);
 
-				ArrayList<TouchCountInClient> rValue = new ArrayList<TouchCountInClient>();
+				ArrayList<touchCount> rValue = new ArrayList<touchCount>();
 				
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
@@ -352,7 +357,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 							int count = cursor.getInt(cursor
 									.getColumnIndex(dataContract.Col._COUNTER_TOUCHED));
 							Log.i(tag, "gift " + id + ": " + count);
-							rValue.add(new TouchCountInClient(id, title, count));
+							rValue.add(new touchCount(id, title, count));
 						} while (cursor.moveToNext() == true);
 					}
 					cursor.close();
@@ -361,7 +366,8 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 				Message msg = Message.obtain(handler,
 						PotlatchMsg.QUERY_TOPGIVER.getVal());
 				Bundle b = new Bundle();
-				b.putParcelableArrayList(PotlatchConst.query_top_giver, rValue);
+			//	b.putParcelableArrayList(PotlatchConst.query_top_giver, rValue);
+				b.putSerializable(PotlatchConst.query_top_giver, rValue);
 				msg.setData(b);
 				handler.sendMessage(msg);
 			}
@@ -386,7 +392,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 				// TODO Auto-generated method stub
 				Collection <touchCount> tcs = svc.getEmotionCountList(emotionType.EMOTION_TOUCHED);
 				
-				Iterator <touchCount> it = tcs.iterator();
+		/*		Iterator <touchCount> it = tcs.iterator();
 				touchCount tc = null;
 				ArrayList<TouchCountInClient> ctc = new ArrayList<TouchCountInClient>();
 				while (it.hasNext())
@@ -397,10 +403,11 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 							tc.getGiftTitle(),
 							tc.getCount()));
 				}	
-				
+			*/	
 				Message msg = Message.obtain(handler, PotlatchMsg.QUERY_TOPGIVER.getVal());				
 				Bundle b = new Bundle();
-				b.putParcelableArrayList(PotlatchConst.query_top_giver, ctc);
+			//	b.putParcelableArrayList(PotlatchConst.query_top_giver, ctc);
+				b.putSerializable(PotlatchConst.query_top_giver, tcs.toArray());
 				msg.setData(b);
 				boolean result = handler.sendMessage(msg);
 				Log.i(tag, "result is " + result);
@@ -411,7 +418,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 	
 
 	@Override
-	public void setEmotionCounter(final GiftInClient gift, final counterEnable[] cEnabled) {
+	public void setEmotionCounter(final Gift gift, final counterEnable[] cEnabled) {
 		// TODO Auto-generated method stub
 		new Thread(new Runnable()
 		{
@@ -434,14 +441,7 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		
 	}
 
-	@Override
-	public void setGiftData(GiftInClient gift) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public long updateTouchCountTable(TouchCountInClient tc) {
+	public long updateTouchCountTable(touchCount tc) {
 
 		Log.i(tag, "updateTouchCountTable");	
 
@@ -484,5 +484,10 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		return row;
 	}
 
+	@Override
+	public void setGiftData(Gift gift) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -1,12 +1,18 @@
 package com.potlatchClient.server;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.potlatchClient.server.emotionType;
 
-public class Gift { 
+public class Gift implements Serializable { 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	protected Long id;
 	
@@ -18,6 +24,8 @@ public class Gift {
 	protected String sUrl; // source url
 	protected String tUrl; // thumbnail url
 	protected int emotionCounter[];
+	
+	protected byte [] thumbnail;
 
 	protected Set<String> touchBy = new HashSet<String>();
 	
@@ -44,6 +52,7 @@ public class Gift {
 		this.description = description;
 		this.giftType = giftType;
 		this.ownerId = ownerId;
+		this.thumbnail = null;
 		this.emotionCounter = new int[emotionType.values().length];
 		for (int i=0; i<this.emotionCounter.length; i++)
 		{
@@ -101,6 +110,11 @@ public class Gift {
 		return emotionCounter;
 	}
 	
+	public byte [] getThumbnail()
+	{
+		return thumbnail;
+	}
+		
 	public int getEmotionCounter(emotionType etype)
 	{	
 		int count = 0;
@@ -149,5 +163,11 @@ public class Gift {
 		default:
 			break;
 		}		
+	}
+	
+	public void setThumbnail(byte [] in)
+	{
+		thumbnail = new byte[in.length];
+		System.arraycopy(in, 0, thumbnail, 0, in.length);
 	}
 }

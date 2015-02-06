@@ -11,9 +11,10 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.potlatchClient.provider.GiftInClient;
-import com.potlatchClient.provider.TouchCountInClient;
-import com.potlatchClient.provider.UserEmotionInClient;
+//import com.potlatchClient.provider.GiftInClient;
+import com.potlatchClient.server.Gift;
+import com.potlatchClient.server.touchCount;
+import com.potlatchClient.server.UserEmotion;//InClient;
 import com.potlatchClient.provider.storageDBHelper;
 import com.potlatchClient.server.emotionType;
 import com.potlatchClient.server.queryDataType;
@@ -34,9 +35,9 @@ public abstract class PotlatchUtil {
 		mDB = dbHelper.getWritableDatabase();
 	}	
 	
-	public abstract void addGift(GiftInClient gift);
+	public abstract void addGift(Gift gift);
 	
-	public abstract void setGiftData(GiftInClient gift);
+	public abstract void setGiftData(Gift gift);
 	
 	public abstract void findGiftByTitle(String title);
 	
@@ -51,15 +52,15 @@ public abstract class PotlatchUtil {
 			queryDataType type,			
 			String selectionArgs[]);
 
-	public abstract void setUserEmotion(UserEmotionInClient user);
+	public abstract void setUserEmotion(UserEmotion user);
 
 	public abstract void queryTopGiver();
 	
 	public abstract void local_queryTopGiver(); 
 	
-	public abstract void setEmotionCounter(GiftInClient gift, counterEnable cEnabled[]);
+	public abstract void setEmotionCounter(Gift gift, counterEnable cEnabled[]);
 
-	public abstract long updateTouchCountTable(TouchCountInClient tc);
+	public abstract long updateTouchCountTable(touchCount tc);
 	
 	public Message setMessage(Handler handler, int what, String key, Object data)
 	{

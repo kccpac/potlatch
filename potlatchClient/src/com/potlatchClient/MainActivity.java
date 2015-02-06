@@ -1,10 +1,11 @@
 package com.potlatchClient;
 
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
-import com.potlatchClient.provider.GiftInClient;
-import com.potlatchClient.provider.TouchCountInClient;
+//import com.potlatchClient.server.Gift;//InClient;
+import com.potlatchClient.server.touchCount;//InClient;
+import com.potlatchClient.server.Gift;
 import com.potlatchClient.server.accountType;
 import com.potlatchClient.service.DownloadService;
 
@@ -81,7 +82,7 @@ public class MainActivity extends Activity {
 		};
 		
 		
-		mUtil = (PotlatchUtil) new LocalPotlachUtil(getApplicationContext());
+		mUtil = (PotlatchUtil) new LocalPotlatchUtil(getApplicationContext());
 		//mUtil = (PotlatchUtil) new ServerPotlatchUtil(getApplicationContext());
 		Log.i(tag, "accountType " + mAccountType + " " + mAccountType.getVal());
 	
@@ -171,7 +172,7 @@ public class MainActivity extends Activity {
 					String description = bundle.getString("Description");
 					String url = bundle.getString("ImageUrl");					 
 											
-					GiftInClient v = new GiftInClient(mUserId, title, description, "jpg");
+					Gift v = new Gift(mUserId, title, description, "jpg");
 					v.setSUrl(url);
 					mUtil.setHandler(mHandler);
 					mUtil.addGift(v);

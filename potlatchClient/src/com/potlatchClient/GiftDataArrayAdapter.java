@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class GiftDataArrayAdapter extends ArrayAdapter<GiftInClient> {
+public class GiftDataArrayAdapter extends ArrayAdapter<Gift> {
 
     private static final String LOG_TAG = GiftDataArrayAdapter.class
             .getCanonicalName();
@@ -24,7 +24,7 @@ public class GiftDataArrayAdapter extends ArrayAdapter<GiftInClient> {
     int resource;
 
     public GiftDataArrayAdapter(Context _context, int _resource,
-            List<GiftInClient> _items) {
+            List<Gift> _items) {
         super(_context, _resource, _items);
         Log.d(LOG_TAG, "constructor()");
         resource = _resource;
