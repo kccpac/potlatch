@@ -1,10 +1,5 @@
 package com.potlatchClient;
 
-
-//import java.util.ArrayList;
-
-//import com.potlatchClient.server.Gift;//InClient;
-import com.potlatchClient.server.touchCount;//InClient;
 import com.potlatchClient.server.Gift;
 import com.potlatchClient.server.accountType;
 import com.potlatchClient.service.DownloadService;

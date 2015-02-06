@@ -30,7 +30,6 @@ public class LocalPotlatchUtil extends PotlatchUtil {
 		super(ctx);
 	}	
 
-
 	public void addGift(Gift gift) {
 		final Gift v = gift;
 		if (mDB == null)
@@ -339,7 +338,6 @@ public class LocalPotlatchUtil extends PotlatchUtil {
 				cursor = mDB.query(dataContract.TABLE_GIFT,
 						dataContract.TOUCHCOUNT_COLUMNS, null, null, null, null, null);
 
-			//	ArrayList<TouchCountInClient> rValue = new ArrayList<TouchCountInClient>();
 				ArrayList<touchCount> rValue = new ArrayList<touchCount>();
 				
 				if (cursor != null) {

@@ -1,6 +1,5 @@
 package com.potlatchClient;
 
-//import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.app.Activity;
 import android.content.Intent;

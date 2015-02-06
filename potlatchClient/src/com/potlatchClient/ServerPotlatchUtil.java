@@ -4,10 +4,8 @@ package com.potlatchClient;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
 
@@ -26,17 +24,14 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.potlatchClient.provider.GiftInClient;
 import com.potlatchClient.server.touchCount;
 import com.potlatchClient.server.UserEmotion;
 import com.potlatchClient.provider.dataContract;
 import com.potlatchClient.server.Gift;
 import com.potlatchClient.server.PotlatchStatus;
 import com.potlatchClient.server.PotlatchSvcApi;
-import com.potlatchClient.server.UserEmotion;
 import com.potlatchClient.server.emotionType;
 import com.potlatchClient.server.queryDataType;
-import com.potlatchClient.server.touchCount;
 
 public class ServerPotlatchUtil extends PotlatchUtil {
 
@@ -80,21 +75,11 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		}
 		new Thread(new Runnable() {
 			
-/*			public Gift convertForServer(GiftInClient gift)
-			{
-				Gift g = new Gift(
-						gift.getOwnerId(),
-						gift.getTitle(),
-						gift.getDescription(),
-						gift.getGiftType());		
-				return g;
-			}*/
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				Gift g= null;//convertForServer(gift);
+				Gift g= null;
 				g = svc.addGift(g);
-
 				
 				Log.i(tag, "Gift id " + g.getId());
 				ContentValues values = new ContentValues();
@@ -158,12 +143,9 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 				b.putByteArray(PotlatchConst.get_data, giftImage);
 				msg.setData(b);
 				handler.sendMessage(msg);
-	
 			}
 		}).start();
-		
 
-	//	return null;
 	}
 
 	@Override
@@ -190,26 +172,6 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		new Thread(new Runnable()
 		{
 
-		/*	private void convertForClient(Collection<Gift> gifts, ArrayList<GiftInClient> gs)
-			{
-			//	ArrayList<GiftInClient> gs = new ArrayList<GiftInClient>();
-			//	int i;
-				Iterator<Gift> it = gifts.iterator();
-				while (it.hasNext() == true)
-				{					
-					Gift gift = it.next();
-					GiftInClient g = new GiftInClient(
-						gift.getId(),
-						gift.getOwnerId(),
-						gift.getTitle(),
-						gift.getDescription(),
-						gift.getGiftType());
-					gs.add(g);
-				}
-			//	return gs;
-			}
-*/
-
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
@@ -227,14 +189,10 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 					default:
 						break;
 				}
-				
-			//	ArrayList<GiftInClient> gClientlist = new ArrayList<GiftInClient>();
-						
-			//	convertForClient(gifts, gClientlist);
+
 				Message msg = Message.obtain(handler, PotlatchMsg.QUERY_GIFTDATA.getVal());				
 				Bundle b = new Bundle();
 				b.putSerializable(PotlatchConst.query_gift_data, gifts.toArray());
-		//		b.putParcelableArrayList(PotlatchConst.query_gift_data, gClientlist);
 				msg.setData(b);
 				boolean result = handler.sendMessage(msg);
 				Log.i(tag, "result is " + result);
@@ -260,33 +218,16 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 		
 		new Thread(new Runnable()
 		{
-	/*		private UserEmotionInClient convertToUserEmotionInClient(UserEmotion user)
-			{				
-				UserEmotionInClient uInClient = new UserEmotionInClient(
-					user.getId(),
-					user.getGiftId());
-				int emotion[] = user.getEmotion();
-				for (int i=0; i<emotion.length; i++)
-				{
-					uInClient.setEmotion(emotionType.getType(i), emotion[i]==1);
-				}
-
-				return uInClient;
-			}
-			*/
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				
 				UserEmotion userfromServer = svc.queryUserData(userId, giftId);
 				
-			//	UserEmotionInClient uInClient = convertToUserEmotionInClient(userfromServer);
-				
 				Message msg = Message.obtain(handler,
 						PotlatchMsg.QUERY_USERDATA.getVal());
 				Bundle b = new Bundle();
 				b.putSerializable(PotlatchConst.query_user_data, userfromServer);
-			//	b.putParcelable(PotlatchConst.query_user_data, uInClient);
 				msg.setData(b);
 				handler.sendMessage(msg);				
 			}			
@@ -300,25 +241,10 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 	
 		new Thread(new Runnable()
 		{
-	/*		private UserEmotion convertToClient(UserEmotionInClient user)
-			{				
-				UserEmotion uInClient = new UserEmotion(
-					user.getId(),
-					user.getGiftId());
-				int emotion[] = user.getEmotion();
-				for (int i=0; i<emotion.length; i++)
-				{
-					uInClient.setEmotion(emotionType.getType(i), emotion[i]==1);
-				}
-
-				return uInClient;
-			}
-			*/
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				
-			//	UserEmotion user = convertToClient(userInClient);
+
 				boolean ret = svc.setUserEmotion(user);
 				
 				Message msg = Message.obtain(handler,
@@ -366,7 +292,6 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 				Message msg = Message.obtain(handler,
 						PotlatchMsg.QUERY_TOPGIVER.getVal());
 				Bundle b = new Bundle();
-			//	b.putParcelableArrayList(PotlatchConst.query_top_giver, rValue);
 				b.putSerializable(PotlatchConst.query_top_giver, rValue);
 				msg.setData(b);
 				handler.sendMessage(msg);
@@ -391,22 +316,9 @@ public class ServerPotlatchUtil extends PotlatchUtil {
 			public void run() {
 				// TODO Auto-generated method stub
 				Collection <touchCount> tcs = svc.getEmotionCountList(emotionType.EMOTION_TOUCHED);
-				
-		/*		Iterator <touchCount> it = tcs.iterator();
-				touchCount tc = null;
-				ArrayList<TouchCountInClient> ctc = new ArrayList<TouchCountInClient>();
-				while (it.hasNext())
-				{
-					tc = it.next();
-					ctc.add(new TouchCountInClient(
-							tc.getGiftId(),
-							tc.getGiftTitle(),
-							tc.getCount()));
-				}	
-			*/	
+
 				Message msg = Message.obtain(handler, PotlatchMsg.QUERY_TOPGIVER.getVal());				
 				Bundle b = new Bundle();
-			//	b.putParcelableArrayList(PotlatchConst.query_top_giver, ctc);
 				b.putSerializable(PotlatchConst.query_top_giver, tcs.toArray());
 				msg.setData(b);
 				boolean result = handler.sendMessage(msg);

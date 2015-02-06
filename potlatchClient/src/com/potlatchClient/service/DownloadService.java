@@ -8,7 +8,7 @@ import com.potlatchClient.PotlatchPref;
 import com.potlatchClient.PotlatchUtil;
 
 import com.potlatchClient.ServerPotlatchUtil;
-import com.potlatchClient.provider.TouchCountInClient;
+import com.potlatchClient.server.touchCount;
 
 
 import android.app.Service;
@@ -75,7 +75,7 @@ public class DownloadService extends Service {
 					public void run()
 					{
 						Log.i(tag, "Load the touchcount data into content provider");
-						ArrayList<TouchCountInClient> data = b.getParcelableArrayList(PotlatchConst.query_top_giver);
+						ArrayList<touchCount> data = (ArrayList<touchCount>) b.getSerializable(PotlatchConst.query_top_giver);
 						
 						if (data == null) return;
 						
